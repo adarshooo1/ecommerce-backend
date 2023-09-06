@@ -2,13 +2,16 @@
 const express = require("express");
 const server = express();
 const mongoose = require("mongoose");
-const { createProduct } = require("./controller/Product");
-const productsRouters = require("./routes/Products");
-const categoriesRouters = require("./routes/Categories");
-const brandsRouters = require("./routes/Brands");
+const productsRouter = require("./routes/Products");
+const categoriesRouter = require("./routes/Categories");
+const brandsRouter = require("./routes/Brands");
+const userRouter = require("./routes/User");
+const authRouter = require("./routes/Auth");
+const cartRouter = require("./routes/Cart");
+const orderRouter = require("./routes/Order");
 const cors = require("cors");
 
-// Middlewares
+// Middleware's
 server.use(express.json()); //To parse req.body
 
 server.use(
@@ -16,19 +19,24 @@ server.use(
     exposedHeaders: ["X-Total-Count"],
   })
 );
-server.use("/products", productsRouters.router);
-server.use("/categories", categoriesRouters.router);
-server.use("/brands", brandsRouters.router);
+server
+  .use("/products", productsRouter.router)
+  .use("/categories", categoriesRouter.router)
+  .use("/brands", brandsRouter.router)
+  .use("/users", userRouter.router)
+  .use("/auth", authRouter.router)
+  .use("/cart", cartRouter.router)
+  .use("/orders", orderRouter.router);
 
 main().catch((err) => console.log(err));
 
 async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
-  console.log("db connected");
+  console.log("Database Connected");
 }
 
 server.get("/", (req, res) => {
-  res.json({ status: "success" });
+  res.json({ status: "Success" });
 });
 
 server.listen(1010, () => {

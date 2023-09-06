@@ -51,7 +51,7 @@ exports.fetchAllProducts = async (req, res) => {
 };
 
 // Api for fetch products by Id
-exports.fetchAProductById = async (req, res) => {
+exports.fetchProductById = async (req, res) => {
   const { id } = req.params;
 
   try {
