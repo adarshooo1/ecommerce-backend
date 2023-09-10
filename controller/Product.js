@@ -4,7 +4,6 @@ const Product = require("../model/Product");
 // Api for create new products
 exports.createProduct = async (req, res) => {
   const product = new Product(req.body);
-
   try {
     const doc = await product.save();
     res.status(201).json(doc);
@@ -30,8 +29,8 @@ exports.fetchAllProducts = async (req, res) => {
     });
   }
   if (req.query.brand) {
-    query = query.find({ category: req.query.brand });
-    totalProductsQuery = totalProductsQuery.find({ category: req.query.brand });
+    query = query.find({ brand: req.query.brand });
+    totalProductsQuery = totalProductsQuery.find({ brand: req.query.brand });
   }
   // TODO: How to get sort on discounted price not on the actual price.
   if (req.query._sort && req.query._order) {

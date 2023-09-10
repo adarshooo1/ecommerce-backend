@@ -1,10 +1,9 @@
-// Model /Product.js
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const brandSchema = new Schema({
-  value: { type: String, required: true, unique: true },
   label: { type: String, required: true, unique: true },
+  value: { type: String, required: true, unique: true },
 });
 
 const virtual = brandSchema.virtual("id");
@@ -19,6 +18,4 @@ brandSchema.set("toJSON", {
   },
 });
 
-const Brand = mongoose.model("Brand", brandSchema);
-
-module.exports = Brand;
+exports.Brand = mongoose.model("Brand", brandSchema);
