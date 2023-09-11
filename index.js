@@ -29,7 +29,6 @@ opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = SECRET_KEY; // TODO: should not be in code;
 
 // Middleware's
-
 server.use(express.static("build"));
 server.use(cookieParser());
 server.use(
@@ -81,7 +80,7 @@ passport.use(
             return done(null, false, { message: "invalid credentials" });
           }
           const token = jwt.sign(sanitizeUser(user), SECRET_KEY);
-          done(null, { token }); // this lines sends to serializer
+          done(null, { id: user.id, role: user.role }); // this lines sends to serializer
         }
       );
     } catch (err) {
