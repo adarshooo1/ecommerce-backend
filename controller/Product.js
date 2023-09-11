@@ -1,5 +1,5 @@
 // Controller /Product.js
-const Product = require("../model/Product");
+const { Product } = require("../model/Product");
 
 // Api for create new products
 exports.createProduct = async (req, res) => {
