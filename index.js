@@ -44,6 +44,8 @@ server.use(
     exposedHeaders: ["X-Total-Count"],
   })
 );
+
+server.use(express.raw({ type: "application/json" }));
 server.use(express.json()); // to parse req.body
 server.use("/products", isAuth(), productsRouter.router);
 // we can also use JWT token for client-only auth
@@ -122,6 +124,68 @@ passport.deserializeUser(function (user, cb) {
     return cb(null, user);
   });
 });
+
+// Stripe Payment Setup:
+// Stripe test secret API Key:
+const stripe = require("stripe")(
+  "sk_test_51NpYSASBMwUMV2RhBZF6FB3ZeDhi6IhRuK3hUW1BgUVfW3BS0YkXw8FcoM8EIjXWQ673mCKSZxogDyGMpLjBdXY000MkMtzV59"
+);
+
+server.post("/create-payment-intent", async (req, res) => {
+  const { totalAmount } = req.body;
+
+  // Create a PaymentIntent with the order amount and currency
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: totalAmount * 100, //For Decimal Compensation
+    currency: "inr",
+    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
+
+// Webhook:
+// This is your Stripe CLI webhook secret for testing your endpoint locally.
+const endpointSecret =
+  "whsec_0bb6a8d28cc0d8ef4165bc239b43582069054f7e1976e3e373ca1d0131f18eff";
+
+server.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (request, response) => {
+    const sig = request.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    } catch (err) {
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntentSucceeded = event.data.object;
+        console.log(paymentIntentSucceeded);
+        // Then define and call a function to handle the event payment_intent.succeeded
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
+  }
+);
+// =========================================
 
 main().catch((err) => console.log(err));
 
