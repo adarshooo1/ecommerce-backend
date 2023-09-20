@@ -1,4 +1,3 @@
-// index.js
 require("dotenv").config();
 const express = require("express");
 const server = express();
@@ -11,7 +10,6 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const JwtStrategy = require("passport-jwt").Strategy;
 const cookieParser = require("cookie-parser");
-
 const productsRouter = require("./routes/Products");
 const categoriesRouter = require("./routes/Categories");
 const brandsRouter = require("./routes/Brands");
@@ -24,8 +22,8 @@ const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
 const path = require("path");
 const { Order } = require("./model/Order");
 
-// Webhook:
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
+// Webhook
+// TODO: we will capture actual order after deploying out server live on public URL
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
 server.post(
@@ -57,7 +55,6 @@ server.post(
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-
     // Return a 200 response to acknowledge receipt of the event
     response.send();
   }
@@ -68,7 +65,7 @@ const opts = {};
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = process.env.JWT_SECRET_KEY; // TODO: should not be in code;
 
-// Middleware's
+//Middleware's
 server.use(express.static(path.resolve(__dirname, "build")));
 server.use(cookieParser());
 server.use(
@@ -107,6 +104,7 @@ passport.use(
     done
   ) {
     // by default passport uses username
+    console.log({ email, password });
     try {
       const user = await User.findOne({ email: email });
       console.log(email, password, user);
@@ -170,20 +168,22 @@ passport.deserializeUser(function (user, cb) {
   });
 });
 
-// Stripe Payment Setup:
-// Stripe test secret API Key:
+// Payments
+// This is your test secret API key.
 const stripe = require("stripe")(process.env.STRIPE_SERVER_KEY);
 
 server.post("/create-payment-intent", async (req, res) => {
-  const { totalAmount } = req.body;
+  const { totalAmount, orderId } = req.body;
 
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: totalAmount * 100, //For Decimal Compensation
+    amount: totalAmount * 100, // for decimal compensation
     currency: "inr",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
     automatic_payment_methods: {
       enabled: true,
+    },
+    metadata: {
+      orderId,
     },
   });
 
