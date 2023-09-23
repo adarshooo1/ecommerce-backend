@@ -103,8 +103,8 @@ exports.resetPassword = async (req, res) => {
         user.password = hashedPassword;
         user.salt = salt;
         await user.save();
-        const subject = "password successfully reset for e-commerce";
-        const html = `<p>Successfully able to Reset Password</p>`;
+        const subject = "Reset you password of Shop@E-commerce";
+        const html = `<p>Password reset successfully</p>`;
         if (email) {
           const response = await sendMail({ to: email, subject, html });
           res.json(response);
