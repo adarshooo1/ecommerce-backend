@@ -1,12 +1,5 @@
 const passport = require("passport");
-//
-//
-//
-//
-//
-//
-//
-//
+
 // Email Service
 const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
@@ -19,15 +12,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_PASSWORD,
   },
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 exports.isAuth = (req, res, done) => {
   return passport.authenticate("jwt");
 };
@@ -44,12 +29,13 @@ exports.cookieExtractor = function (req) {
   return token;
 };
 
-exports.sendMail = async function ({to, from, subject, html}) {
-  const info = await transporter.sendMail({
-    from: '"Shop @ E-commerce" <shop@ecommerce.com>', // sender address <shop@eocmmerce.com will be replace with actual email address who is sending then email.>
-    to, // list of receivers
-    subject, // Subject line
-    // text, // plain text body
-    html, // html body
+exports.sendMail = async function ({ to, subject, text, html }) {
+  let info = await transporter.sendMail({
+    from: '"E-commerce" <coderdost@gmail.com>', // sender address
+    to,
+    subject,
+    text,
+    html,
   });
+  return info;
 };
