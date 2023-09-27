@@ -5,9 +5,9 @@ const orderSchema = new Schema(
   {
     items: { type: [Schema.Types.Mixed], required: true },
     totalAmount: { type: Number },
-    totalAmount: { type: Number },
+    totalItems: { type: Number },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    //TODO; Later we will add enum types
+    //TODO:  we can add enum types
     paymentMethod: { type: String, required: true },
     paymentStatus: { type: String, default: "pending" },
     status: { type: String, default: "pending" },
