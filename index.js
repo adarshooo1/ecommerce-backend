@@ -23,7 +23,6 @@ const path = require("path");
 const { Order } = require("./model/Order");
 
 // Webhook
-// TODO: we will capture actual order after deploying out server live on public URL
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
 server.post(
@@ -63,7 +62,7 @@ server.post(
 // JWT options
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey = process.env.JWT_SECRET_KEY; // TODO: should not be in code;
+opts.secretOrKey = process.env.JWT_SECRET_KEY;
 
 //Middleware's
 server.use(express.static(path.resolve(__dirname, "build")));
