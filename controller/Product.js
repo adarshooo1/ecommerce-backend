@@ -24,6 +24,7 @@ exports.fetchAllProducts = async (req, res) => {
 
   let query = Product.find(condition);
   let totalProductsQuery = Product.find(condition);
+  // Initially the req.query.category will be undefined, Because category is not selected.
   console.log(req.query.category);
   if (req.query.category) {
     query = query.find({ category: { $in: req.query.category.split(",") } });
